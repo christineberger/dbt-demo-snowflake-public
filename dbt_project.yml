@@ -49,8 +49,6 @@ models:
       staging:
           # Applies to all files under models/staging 
           +materialized: view
-          # This defaults every model in the staging directory to be materialized as a view in Snowflake. To learn more about materializations: https://docs.getdbt.com/docs/building-a-dbt-project/building-models/materializations
-          schema: staging
           # This configuration builds every model in the staging directory into a schema named staging_<target_schema>
           # learn more about custom schemas: https://docs.getdbt.com/docs/building-a-dbt-project/building-models/using-custom-schemas
           query_tag: dbt_staging
