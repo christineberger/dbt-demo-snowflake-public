@@ -1,32 +1,32 @@
-{{
-    config(
-        materialized = 'table',
-        tags=['finance']
-    )
-}}
+with 
 
-with orders as (
+orders as (
     
-    select * from {{ ref('stg_tpch_orders') }} 
+    select * from {{ ref('stg_tpch__orders') }} 
 
 ),
-order_item as (
+
+order_items as (
     
-    select * from {{ ref('order_items') }}
+    select * from {{ ref('int_order_items') }}
 
 ),
+
 order_item_summary as (
 
     select 
+
         order_key,
         sum(gross_item_sales_amount) as gross_item_sales_amount,
         sum(item_discount_amount) as item_discount_amount,
         sum(item_tax_amount) as item_tax_amount,
         sum(net_item_sales_amount) as net_item_sales_amount
-    from order_item
-    group by
-        1
+
+    from order_items
+    group by 1
+
 ),
+
 final as (
 
     select 
@@ -44,15 +44,12 @@ final as (
         order_item_summary.item_discount_amount,
         order_item_summary.item_tax_amount,
         order_item_summary.net_item_sales_amount
-    from
-        orders
-        inner join order_item_summary
-            on orders.order_key = order_item_summary.order_key
-)
-select 
-    *
-from
-    final
 
-order by
-    order_date
+    from orders
+    
+    inner join order_item_summary
+        on orders.order_key = order_item_summary.order_key
+
+)
+
+select * from final

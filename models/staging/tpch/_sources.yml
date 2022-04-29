@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: tpch
+    description: '{{ doc("source_tpch") }}'
+    database: raw_tpch
+    schema: tpch_sf1
+    tables:
+      - name: orders
+      - name: customer
+      - name: lineitem
+      - name: nation
+      - name: part
+      - name: partsupp
+      - name: region
+      - name: supplier
