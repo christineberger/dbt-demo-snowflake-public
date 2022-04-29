@@ -1,0 +1,81 @@
+# This is a yml file in which we provide descriptions for both models and columns.
+# You can see how we also apply doc blocks (https://docs.getdbt.com/docs/building-a-dbt-project/documentation#using-docs-blocks) to 
+# write descriptions in one place (via a md file) and apply them through the project.
+# We have also applied tests to every primary key listed in this file.
+# Full documentation: https://docs.getdbt.com/reference/declaring-properties
+
+version: 2
+
+models:
+  
+  - name: stg_tpch_customers
+    description: >
+      Staging layer for customers data
+    columns:
+      - name: customer_key
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_tpch_line_items
+    description: >
+      Staging layer for line items data
+    columns:
+      - name: order_item_key
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_tpch_nations
+    description: >
+      Staging layer for nations data
+    columns:
+      - name: nation_key
+        tests:
+          - unique
+          - not_null   
+ 
+  - name: stg_tpch_orders
+    description: >
+      Staging layer for orders data
+    columns:
+      - name: order_key
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_tpch_part_suppliers
+    description: >
+      Staging layer for suppliers data
+    columns:
+      - name: part_supplier_key
+        tests:
+          - unique
+          - not_null
+            
+  - name: stg_tpch_parts
+    description: >
+      Staging layer for parts data
+    columns:
+      - name: part_key
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_tpch_regions
+    description: >
+      Staging layer for regions data
+    columns:
+      - name: region_key
+        tests:
+          - unique
+          - not_null
+          
+  - name: stg_tpch_suppliers
+    description: >
+      Staging layer for suppliers data
+    columns:
+      - name: supplier_key
+        tests:
+          - unique
+          - not_null
