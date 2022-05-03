@@ -10,7 +10,7 @@ final as (
 
     select 
 
-        part_key,
+        part_key as part_id,
         manufacturer,
         name,
         brand,
