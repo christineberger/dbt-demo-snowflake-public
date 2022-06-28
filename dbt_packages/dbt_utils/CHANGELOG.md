@@ -1,3 +1,93 @@
+<!--- Copy, paste, and uncomment the following headers as-needed for unreleased features
+# Unreleased
+## New features
+- XXX ([#XXX](https://github.com/dbt-labs/dbt-utils/issues/XXX), [#XXX](https://github.com/dbt-labs/dbt-utils/pull/XXX))
+## Fixes
+## Quality of life
+## Under the hood
+## Contributors:
+--->
+
+# dbt-utils v0.8.6
+
+## New features
+- New macros `array_append` and `array_construct` ([#595](https://github.com/dbt-labs/dbt-utils/pull/595))
+
+## Fixes
+- Use `*` in `star` macro if no columns (for SQLFluff) ([#605](https://github.com/dbt-labs/dbt-utils/issues/605), [#561](https://github.com/dbt-labs/dbt-utils/pull/561))
+- Only raise error within `union_relations` for `build`/`run` sub-commands ([#606](https://github.com/dbt-labs/dbt-utils/issues/606), [#607](https://github.com/dbt-labs/dbt-utils/pull/607))
+
+## Quality of life
+- Add slugify to list of Jinja Helpers ([#602](https://github.com/dbt-labs/dbt-utils/pull/602))
+
+## Under the hood
+- Fix `make test` for running integration tests locally ([#344](https://github.com/dbt-labs/dbt-utils/issues/344), [#564](https://github.com/dbt-labs/dbt-utils/issues/564), [#591](https://github.com/dbt-labs/dbt-utils/pull/591))
+
+## Contributors:
+- [@swanjson](https://github.com/swanjson) (#561)
+- [@dataders](https://github.com/dataders) (#561)
+- [@epapineau](https://github.com/epapineau) (#583)
+- [@graciegoheen](https://github.com/graciegoheen) (#595)
+- [@jeremyyeo](https://github.com/jeremyyeo) (#606)
+
+# dbt-utils v0.8.5
+## 🚨 deduplicate ([#542](https://github.com/dbt-labs/dbt-utils/pull/542), [#548](https://github.com/dbt-labs/dbt-utils/pull/548))
+
+The call signature of `deduplicate` has changed. The previous call signature is marked as deprecated and will be removed in the next minor version.
+
+- The `group_by` argument is now deprecated and replaced by `partition_by`.
+- The `order_by` argument is now required.
+- The `relation_alias` argument has been removed as the macro now supports `relation` as a string directly. If you were using `relation_alias` to point to a CTE previously then you can now pass the alias directly to `relation`.
+
+Before:
+```jinja
+{% macro deduplicate(relation, group_by, order_by=none, relation_alias=none) -%}
+...
+{% endmacro %}
+```
+
+After:
+```jinja
+{% macro deduplicate(relation, partition_by, order_by) -%}
+...
+{% endmacro %}
+```
+
+## New features
+- Add an optional `where` clause parameter to `get_column_values()` to filter values returned ([#511](https://github.com/dbt-labs/dbt-utils/issues/511), [#583](https://github.com/dbt-labs/dbt-utils/pull/583))
+- Add `where` parameter to `union_relations` macro ([#554](https://github.com/dbt-labs/dbt-utils/pull/554))
+- Add Postgres specific implementation of `deduplicate()` ([#548](https://github.com/dbt-labs/dbt-utils/pull/548))
+- Add Snowflake specific implementation of `deduplicate()` ([#543](https://github.com/dbt-labs/dbt-utils/issues/543), [#548](https://github.com/dbt-labs/dbt-utils/pull/548))
+
+## Fixes
+- Enable a negative part_number for `split_part()` ([#557](https://github.com/dbt-labs/dbt-utils/issues/557), [#559](https://github.com/dbt-labs/dbt-utils/pull/559))
+
+## Quality of life
+- Documentation about listagg macro ([#544](https://github.com/dbt-labs/dbt-utils/issues/544), [#560](https://github.com/dbt-labs/dbt-utils/pull/560))
+- Fix links to macro section in table of contents ([#555](https://github.com/dbt-labs/dbt-utils/pull/555))
+- Use the ADR (Architectural Design Record) pattern for documenting significant decisions ([#573](https://github.com/dbt-labs/dbt-utils/pull/573))
+- Contributing guide ([#574](https://github.com/dbt-labs/dbt-utils/pull/574))
+- Add better documentation for `deduplicate()` ([#542](https://github.com/dbt-labs/dbt-utils/pull/542), [#548](https://github.com/dbt-labs/dbt-utils/pull/548))
+
+## Under the hood
+- Fail integration tests appropriately ([#540](https://github.com/dbt-labs/dbt-utils/issues/540), [#545](https://github.com/dbt-labs/dbt-utils/pull/545))
+- Upgrade CircleCI postgres convenience image ([#584](https://github.com/dbt-labs/dbt-utils/issues/584), [#585](https://github.com/dbt-labs/dbt-utils/pull/585))
+- Run test for `deduplicate` ([#579](https://github.com/dbt-labs/dbt-utils/issues/579), [#580](https://github.com/dbt-labs/dbt-utils/pull/580))
+- Reduce warnings when executing integration tests ([#558](https://github.com/dbt-labs/dbt-utils/issues/558), [#581](https://github.com/dbt-labs/dbt-utils/pull/581))
+- Framework for functional testing using `pytest` ([#588](https://github.com/dbt-labs/dbt-utils/pull/588))
+
+## Contributors:
+- [@graciegoheen](https://github.com/graciegoheen) (#560)
+- [@judahrand](https://github.com/judahrand) (#548)
+- [@clausherther](https://github.com/clausherther) (#555)
+- [@LewisDavies](https://github.com/LewisDavies) (#554)
+- [@epapineau](https://github.com/epapineau) (#583)
+- [@b-per](https://github.com/b-per) (#559)
+
+# dbt-utils v0.8.4
+## Fixes
+- Change from quotes to backticks for BQ ([#536](https://github.com/dbt-labs/dbt-utils/issues/536), [#537](https://github.com/dbt-labs/dbt-utils/pull/537))
+
 # dbt-utils v0.8.3
 ## New features
 - A macro for deduplicating data, `deduplicate()` ([#335](https://github.com/dbt-labs/dbt-utils/issues/335), [#512](https://github.com/dbt-labs/dbt-utils/pull/512))
@@ -6,7 +96,7 @@
 
 ## Fixes
 - `get_column_values()` once more raises an error when the model doesn't exist and there is no default provided ([#531](https://github.com/dbt-labs/dbt-utils/issues/531), [#533](https://github.com/dbt-labs/dbt-utils/pull/533))
-- `get_column_values()` raises an error when used with an ephemeral model, instead of getting stuck in a compilation loop ([#358](https://github.com/dbt-labs/dbt-utils/issues/358), [#518](https://github.com/dbt-labs/dbt-utils/pull/518)) 
+- `get_column_values()` raises an error when used with an ephemeral model, instead of getting stuck in a compilation loop ([#358](https://github.com/dbt-labs/dbt-utils/issues/358), [#518](https://github.com/dbt-labs/dbt-utils/pull/518))
 - BigQuery materialized views work correctly with `get_relations_by_pattern()` ([#525](https://github.com/dbt-labs/dbt-utils/pull/525))
 
 ## Quality of life

@@ -1,14 +1,8 @@
-# This is a yml file in which we provide descriptions for both models and columns.
-# You can see how we also apply doc blocks (https://docs.getdbt.com/docs/building-a-dbt-project/documentation#using-docs-blocks) to 
-# write descriptions in one place (via a md file) and apply them through the project.
-# We have also applied tests to every primary key listed in this file.
-# Full documentation: https://docs.getdbt.com/reference/declaring-properties
-
 version: 2
 
 models:
   
-  - name: stg_tpch_customers
+  - name: stg_tpch__customers
     description: >
       Staging layer for customers data
     columns:
@@ -17,7 +11,7 @@ models:
           - unique
           - not_null
 
-  - name: stg_tpch_line_items
+  - name: stg_tpch__line_items
     description: >
       Staging layer for line items data
     columns:
@@ -26,7 +20,7 @@ models:
           - unique
           - not_null
 
-  - name: stg_tpch_nations
+  - name: stg_tpch__nations
     description: >
       Staging layer for nations data
     columns:
@@ -35,7 +29,7 @@ models:
           - unique
           - not_null   
  
-  - name: stg_tpch_orders
+  - name: stg_tpch__orders
     description: >
       Staging layer for orders data
     columns:
@@ -44,7 +38,7 @@ models:
           - unique
           - not_null
 
-  - name: stg_tpch_part_suppliers
+  - name: stg_tpch__part_suppliers
     description: >
       Staging layer for suppliers data
     columns:
@@ -53,7 +47,7 @@ models:
           - unique
           - not_null
             
-  - name: stg_tpch_parts
+  - name: stg_tpch__parts
     description: >
       Staging layer for parts data
     columns:
@@ -62,7 +56,7 @@ models:
           - unique
           - not_null
 
-  - name: stg_tpch_regions
+  - name: stg_tpch__regions
     description: >
       Staging layer for regions data
     columns:
@@ -71,7 +65,7 @@ models:
           - unique
           - not_null
           
-  - name: stg_tpch_suppliers
+  - name: stg_tpch__suppliers
     description: >
       Staging layer for suppliers data
     columns:
