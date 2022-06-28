@@ -12,7 +12,7 @@ models:
           - unique
           - not_null
   
-  - name: part_suppliers
+  - name: int_part_suppliers
     description: >
       Intermediate model where we join part, supplier and part_supplier. 
       This model is at the part supplier level.

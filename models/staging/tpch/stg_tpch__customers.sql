@@ -15,16 +15,14 @@ focus on writing the SQL without worry about the create statement.
 Full documention: https://docs.getdbt.com/docs/building-a-dbt-project/building-models
 
 */
-with source as (
+with 
 
+source as (
     select * from {{ source('tpch', 'customer') }}
-
 ),
 
 renamed as (
-
     select
-    
         c_custkey as customer_key,
         c_name as name,
         c_address as address, 
@@ -33,9 +31,7 @@ renamed as (
         c_acctbal as account_balance,
         c_mktsegment as market_segment,
         c_comment as comment
-
     from source
-
 )
 
 select * from renamed

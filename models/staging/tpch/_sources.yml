@@ -1,6 +1,7 @@
 version: 2
 
 sources:
+
   - name: tpch
     description: '{{ doc("source_tpch") }}'
     database: raw_tpch

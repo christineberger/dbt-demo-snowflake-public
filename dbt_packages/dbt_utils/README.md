@@ -37,7 +37,7 @@ For compatibility details between versions of dbt-core and dbt-utils, [see this 
 
 - [SQL generators](#sql-generators)
     - [date_spine](#date_spine-source)
-    - [deduplicate](#deduplicate)
+    - [deduplicate](#deduplicate-source)
     - [haversine_distance](#haversine_distance-source)
     - [group_by](#group_by-source)
     - [star](#star-source)
@@ -60,12 +60,17 @@ For compatibility details between versions of dbt-core and dbt-utils, [see this 
     - [split_part](#split_part-source)
     - [last_day](#last_day-source)
     - [width_bucket](#width_bucket-source)
-    - [listagg](#listagg)
+    - [listagg](#listagg-source)
+    - [array_construct](#array_construct-source)
+    - [array_append](#array_append-source)
+    - [array_concat](#array_concat-source)
+    - [cast_array_to_string](#cast_array_to_string-source)
 
 - [Jinja Helpers](#jinja-helpers)
     - [pretty_time](#pretty_time-source)
     - [pretty_log_format](#pretty_log_format-source)
     - [log_info](#log_info-source)
+    - [slugify](#slugify-source)
 
 [Materializations](#materializations):
 - [insert_by_period](#insert_by_period-source)
@@ -553,6 +558,7 @@ This macro returns the unique values for a column in a given [relation](https://
 **Args:**
 - `table` (required): a [Relation](https://docs.getdbt.com/reference/dbt-classes#relation) (a `ref` or `source`) that contains the list of columns you wish to select from
 - `column` (required): The name of the column you wish to find the column values of
+- `where` (optional, default=`none`): A where clause to filter the column values by. 
 - `order_by` (optional, default=`'count(*) desc'`): How the results should be ordered. The default is to order by `count(*) desc`, i.e. decreasing frequency. Setting this as `'my_column'` will sort alphabetically, while `'min(created_at)'` will sort by when thevalue was first observed.
 - `max_records` (optional, default=`none`): The maximum number of column values you want to return
 - `default` (optional, default=`[]`): The results this macro should return if the relation has not yet been created (and therefore has no column values).
@@ -595,7 +601,7 @@ This macro returns the unique values for a column in a given [relation](https://
 This macro returns an iterable Jinja list of columns for a given [relation](https://docs.getdbt.com/docs/writing-code-in-dbt/class-reference/#relation), (i.e. not from a CTE)
 - optionally exclude columns
 - the input values are not case-sensitive (input uppercase or lowercase and it will work!)
-> Note: The native [`adapter.get_columns_in_relation` macro](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter#get_columns_in_relation) allows you 
+> Note: The native [`adapter.get_columns_in_relation` macro](https://docs.getdbt.com/reference/dbt-jinja-functions/adapter#get_columns_in_relation) allows you
 to pull column names in a non-filtered fashion, also bringing along with it other (potentially unwanted) information, such as dtype, char_size, numeric_precision, etc.
 
 **Args:**
@@ -735,16 +741,44 @@ This macro returns the sql required to build a date spine. The spine will includ
 ```
 
 #### deduplicate ([source](macros/sql/deduplicate.sql))
-This macro returns the sql required to remove duplicate rows from a model or source.
+This macro returns the sql required to remove duplicate rows from a model, source, or CTE.
+
+**Args:**
+ - `relation` (required): a [Relation](https://docs.getdbt.com/reference/dbt-classes#relation) (a `ref` or `source`) or string which identifies the model to deduplicate.
+ - `partition_by` (required): column names (or expressions) to use to identify a set/window of rows out of which to select one as the deduplicated row.
+ - `order_by` (required): column names (or expressions) that determine the priority order of which row should be chosen if there are duplicates (comma-separated string). *NB.* if this order by clause results in ties then which row is returned may be nondeterministic across runs.
 
 **Usage:**
 
 ```
 {{ dbt_utils.deduplicate(
     relation=source('my_source', 'my_table'),
-    group_by="user_id, cast(timestamp as day)",
+    partition_by='user_id, cast(timestamp as day)',
     order_by="timestamp desc",
-    relation_alias="my_cte"
+   )
+}}
+```
+
+```
+{{ dbt_utils.deduplicate(
+    relation=ref('my_model'),
+    partition_by='user_id',
+    order_by='effective_date desc, effective_sequence desc',
+   )
+}}
+```
+
+```
+with my_cte as (
+    select *
+    from {{ source('my_source', 'my_table') }}
+    where user_id = 1
+)
+
+{{ dbt_utils.deduplicate(
+    relation='my_cte',
+    partition_by='user_id, cast(timestamp as day)',
+    order_by='timestamp desc',
    )
 }}
 ```
@@ -791,19 +825,19 @@ group by 1,2,3
 ```
 
 #### star ([source](macros/sql/star.sql))
-This macro generates a comma-separated list of all fields that exist in the `from` relation, excluding any fields 
-listed in the `except` argument. The construction is identical to `select * from {{ref('my_model')}}`, replacing star (`*`) with 
-the star macro. 
-This macro also has an optional `relation_alias` argument that will prefix all generated fields with an alias (`relation_alias`.`field_name`). 
-The macro also has optional `prefix` and `suffix` arguments. When one or both are provided, they will be concatenated onto each field's alias 
+This macro generates a comma-separated list of all fields that exist in the `from` relation, excluding any fields
+listed in the `except` argument. The construction is identical to `select * from {{ref('my_model')}}`, replacing star (`*`) with
+the star macro.
+This macro also has an optional `relation_alias` argument that will prefix all generated fields with an alias (`relation_alias`.`field_name`).
+The macro also has optional `prefix` and `suffix` arguments. When one or both are provided, they will be concatenated onto each field's alias
 in the output (`prefix` ~ `field_name` ~ `suffix`). NB: This prevents the output from being used in any context other than a select statement.
 
 **Args:**
 - `from` (required): a [Relation](https://docs.getdbt.com/reference/dbt-classes#relation) (a `ref` or `source`) that contains the list of columns you wish to select from
 - `except` (optional, default=`[]`): The name of the columns you wish to exclude. (case-insensitive)
-- `relation_alias` (optional, default=`''`): will prefix all generated fields with an alias (`relation_alias`.`field_name`). 
-- `prefix` (optional, default=`''`): will prefix the output `field_name` (`field_name as prefix_field_name`). 
-- `suffix` (optional, default=`''`): will suffix the output `field_name` (`field_name as field_name_suffix`). 
+- `relation_alias` (optional, default=`''`): will prefix all generated fields with an alias (`relation_alias`.`field_name`).
+- `prefix` (optional, default=`''`): will prefix the output `field_name` (`field_name as prefix_field_name`).
+- `suffix` (optional, default=`''`): will suffix the output `field_name` (`field_name as field_name_suffix`).
 
 **Usage:**
 ```sql
@@ -853,6 +887,7 @@ final query. Note the `include` and `exclude` arguments are mutually exclusive.
 e.g. `{"some_field": "varchar(100)"}`.``
 * `source_column_name` (optional, `default="_dbt_source_relation"`): The name of
 the column that records the source of this row.
+* `where` (optional): Filter conditions to include in the `where` clause.
 
 #### generate_series ([source](macros/sql/generate_series.sql))
 This macro implements a cross-database mechanism to generate an arbitrarily long list of numbers. Specify the maximum number you'd like in your list and it will create a 1-indexed SQL result set.
@@ -961,7 +996,7 @@ Boolean values are replaced with the strings 'true'|'false'
     | 2017-03-01 | processing | size       | S     |
     | 2017-03-01 | processing | color      | red   |
 
-**Args**:
+**Args:**
 - `relation`: The [Relation](https://docs.getdbt.com/docs/writing-code-in-dbt/class-reference/#relation) to unpivot.
 - `cast_to`: The data type to cast the unpivoted values to, default is varchar
 - `exclude`: A list of columns to exclude from the unpivot operation but keep in the resulting table.
@@ -1025,8 +1060,8 @@ This macro calculates the difference between two dates.
 #### split_part ([source](macros/cross_db_utils/split_part.sql))
 This macro splits a string of text using the supplied delimiter and returns the supplied part number (1-indexed).
 
-**Args**:
-- `string_text` (required): Text to be split into parts. 
+**Args:**
+- `string_text` (required): Text to be split into parts.
 - `delimiter_text` (required): Text representing the delimiter to split by.
 - `part_number` (required): Requested part of the split (1-based). If the value is negative, the parts are counted backward from the end of the string.
 
@@ -1081,6 +1116,69 @@ When an expression falls outside the range, the function returns:
 {{ dbt_utils.width_bucket(expr, min_value, max_value, num_buckets) }}
 ```
 
+#### listagg ([source](macros/cross_db_utils/listagg.sql))
+This macro returns the concatenated input values from a group of rows separated by a specified deliminator.
+
+**Args:**
+- `measure` (required): The expression (typically a column name) that determines the values to be concatenated. To only include distinct values add keyword DISTINCT to beginning of expression (example: 'DISTINCT column_to_agg').
+- `delimiter_text` (required): Text representing the delimiter to separate concatenated values by.
+- `order_by_clause` (optional): An expression (typically a column name) that determines the order of the concatenated values.
+- `limit_num` (optional): Specifies the maximum number of values to be concatenated.
+
+Note: If there are instances of `delimiter_text` within your `measure`, you cannot include a `limit_num`.
+
+**Usage:**
+```
+{{ dbt_utils.listagg(measure='column_to_agg', delimiter_text="','", order_by_clause="order by order_by_column", limit_num=10) }}
+```
+
+#### array_construct ([source](macros/cross_db_utils/array_construct.sql))
+This macro returns an array constructed from a set of inputs. 
+
+**Args:**
+- `inputs` (optional): The list of array contents. If not provided, this macro will create an empty array. All inputs must be the *same data type* in order to match Postgres functionality and *not null* to match Bigquery functionality.
+- `data_type` (optional): Specifies the data type of the constructed array. This is only relevant when creating an empty array (will otherwise use the data type of the inputs). If `inputs` are `data_type` are both not provided, this macro will create an empty array of type integer.
+
+**Usage:**
+```
+{{ dbt_utils.array_construct(['column_1', 'column_2', 'column_3']) }}
+{{ dbt_utils.array_construct([],'integer') }}
+```
+
+#### array_append ([source](macros/cross_db_utils/array_append.sql))
+This macro appends an element to the end of an array and returns the appended array.
+
+**Args:**
+- `array` (required): The array to append to. 
+- `new_element` (required): The element to be appended. This element must *match the data type of the existing elements* in the array in order to match Postgres functionality and *not null* to match Bigquery functionality. 
+
+**Usage:**
+```
+{{ dbt_utils.array_append('array_column', 'element_column') }}
+```
+
+#### array_concat ([source](macros/cross_db_utils/array_concat.sql))
+This macro returns the concatenation of two arrays.
+
+**Args:**
+- `array_1` (required): The array to append to. 
+- `array_2` (required): The array to be appended to `array_1`. This array must match the data type of `array_1` in order to match Postgres functionality.
+
+**Usage:**
+```
+{{ dbt_utils.array_concat('array_column_1', 'array_column_2') }}
+```
+
+#### cast_array_to_string ([source](macros/cross_db_utils/cast_array_to_string.sql))
+This macro converts an array to a single string value and returns the resulting string. 
+
+**Args:**
+- `array` (required): The array to convert to a string.
+
+**Usage:**
+```
+{{ dbt_utils.cast_array_to_string('array_column') }}
+```
 
 ---
 ### Jinja Helpers
@@ -1204,9 +1302,11 @@ A useful workaround is to change the above post-hook to:
 
 ----
 
-### Contributing
+### Reporting bugs and contributing code
 
-We welcome contributions to this repo! To contribute a new feature or a fix, please open a Pull Request with 1) your changes, 2) updated documentation for the `README.md` file, and 3) a working integration test. See [this page](integration_tests/README.md) for more information.
+- Want to report a bug or request a feature? Let us know in the `#package-ecosystem` channel on [Slack](http://community.getdbt.com/), or open [an issue](https://github.com/dbt-labs/dbt-utils/issues/new)
+- Want to help us build dbt-utils? Check out the [Contributing Guide](https://github.com/dbt-utils/dbt-core/blob/HEAD/CONTRIBUTING.md)
+    - **TL;DR** Open a Pull Request with 1) your changes, 2) updated documentation for the `README.md` file, and 3) a working integration test.
 
 ----
 
