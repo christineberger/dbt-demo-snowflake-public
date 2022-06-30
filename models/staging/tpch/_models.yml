@@ -1,12 +1,39 @@
 version: 2
 
 models:
-  
+ 
+  - name: base_tpch__nations
+    description: >
+      Staging layer for nations data
+    columns:
+      - name: nation_id
+        tests:
+          - unique
+          - not_null   
+
+  - name: base_tpch__regions
+    description: >
+      Staging layer for regions data
+    columns:
+      - name: region_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_tpch__locations
+    description: >
+      Staging layer for location data
+    columns:
+      - name: region_id
+        tests:
+          - unique
+          - not_null
+
   - name: stg_tpch__customers
     description: >
       Staging layer for customers data
     columns:
-      - name: customer_key
+      - name: customer_id
         tests:
           - unique
           - not_null
@@ -15,25 +42,16 @@ models:
     description: >
       Staging layer for line items data
     columns:
-      - name: order_item_key
+      - name: order_item_id
         tests:
           - unique
           - not_null
-
-  - name: stg_tpch__nations
-    description: >
-      Staging layer for nations data
-    columns:
-      - name: nation_key
-        tests:
-          - unique
-          - not_null   
  
   - name: stg_tpch__orders
     description: >
       Staging layer for orders data
     columns:
-      - name: order_key
+      - name: order_id
         tests:
           - unique
           - not_null
@@ -42,7 +60,7 @@ models:
     description: >
       Staging layer for suppliers data
     columns:
-      - name: part_supplier_key
+      - name: part_supplier_sk
         tests:
           - unique
           - not_null
@@ -51,16 +69,7 @@ models:
     description: >
       Staging layer for parts data
     columns:
-      - name: part_key
-        tests:
-          - unique
-          - not_null
-
-  - name: stg_tpch__regions
-    description: >
-      Staging layer for regions data
-    columns:
-      - name: region_key
+      - name: part_id
         tests:
           - unique
           - not_null
@@ -69,7 +78,7 @@ models:
     description: >
       Staging layer for suppliers data
     columns:
-      - name: supplier_key
+      - name: supplier_id
         tests:
           - unique
           - not_null

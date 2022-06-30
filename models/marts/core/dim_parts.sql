@@ -1,17 +1,17 @@
 with 
 
 parts as (
-    select * from {{ref('stg_tpch__parts')}}
+    select * from {{ref('int_part_suppliers')}}
 ),
 
 final as (
-    select 
-        part_key,
+    select distinct
+        part_id,
         manufacturer,
-        name,
+        part_name,
         brand,
-        type,
-        size,
+        part_type,
+        part_size,
         container,
         retail_price
     from parts

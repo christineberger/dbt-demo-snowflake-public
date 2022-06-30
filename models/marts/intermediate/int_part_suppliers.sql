@@ -14,8 +14,8 @@ part_suppliers as (
 
 final as (
     select 
-        part_suppliers.part_supplier_key,
-        parts.part_key,
+        part_suppliers.part_supplier_sk,
+        parts.part_id,
         parts.name as part_name,
         parts.manufacturer,
         parts.brand,
@@ -23,19 +23,19 @@ final as (
         parts.size as part_size,
         parts.container,
         parts.retail_price,
-        suppliers.supplier_key,
+        suppliers.supplier_id,
         suppliers.supplier_name,
         suppliers.supplier_address,
         suppliers.phone_number,
         suppliers.account_balance,
-        suppliers.nation_key,
+        suppliers.nation_id,
         part_suppliers.available_quantity,
         part_suppliers.cost
     from parts
     inner join part_suppliers
-        on parts.part_key = part_suppliers.part_key
+        on parts.part_id = part_suppliers.part_id
     inner join suppliers
-        on part_suppliers.supplier_key = suppliers.supplier_key  
+        on part_suppliers.supplier_id = suppliers.supplier_id
 )
 
 select * from final

@@ -6,13 +6,18 @@ source as (
 
 renamed as (
     select
-        s_suppkey as supplier_key,
+        -- ids
+        s_suppkey as supplier_id,
+        s_nationkey as nation_id,
+
+        -- dimensions
         s_name as supplier_name,
         s_address as supplier_address,
-        s_nationkey as nation_key,
         s_phone as phone_number,
-        s_acctbal as account_balance,
-        s_comment as comment
+        s_comment as comment,
+
+        -- measures
+        s_acctbal as account_balance
     from source
 )
 
