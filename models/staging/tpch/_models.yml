@@ -24,7 +24,7 @@ models:
     description: >
       Staging layer for location data
     columns:
-      - name: region_id
+      - name: location_sk
         tests:
           - unique
           - not_null
@@ -42,7 +42,7 @@ models:
     description: >
       Staging layer for line items data
     columns:
-      - name: order_item_id
+      - name: order_item_sk
         tests:
           - unique
           - not_null
