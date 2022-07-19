@@ -6,7 +6,7 @@ models:
     description: >
       Parts dimensions table
     columns:
-      - name: part_key
+      - name: part_id
         tests:
           - unique
           - not_null
@@ -15,7 +15,7 @@ models:
     description: >
       Suppliers dimensions table
     columns:
-      - name: supplier_key
+      - name: supplier_id
         tests:
           - unique
           - not_null
@@ -24,7 +24,7 @@ models:
     description: >
       Order items fact table
     columns:
-      - name: order_item_key
+      - name: order_item_sk
         tests:
           - unique
           - not_null
@@ -33,7 +33,7 @@ models:
     description: >
       Orders fact table
     columns:
-      - name: order_key
+      - name: order_id
         tests:
           - unique
           - not_null

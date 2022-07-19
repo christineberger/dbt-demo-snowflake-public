@@ -7,7 +7,7 @@ models:
       Intermediate model where we calculate item price, discounts and tax. 
       This model is at the order item level.
     columns:
-      - name: order_item_key
+      - name: order_item_sk
         tests:
           - unique
           - not_null
@@ -17,7 +17,7 @@ models:
       Intermediate model where we join part, supplier and part_supplier. 
       This model is at the part supplier level.
     columns:
-      - name: part_supplier_key
+      - name: part_supplier_sk
         tests:
           - unique
           - not_null

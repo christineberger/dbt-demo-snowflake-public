@@ -10,13 +10,22 @@ line_items as (
 
 final as (
     select 
-        line_items.order_item_key,
-        orders.order_key,
-        orders.customer_key,
-        line_items.part_key,
-        line_items.supplier_key,
+        orders.order_id,
+        orders.customer_id,
+
+        {{ dbt_utils.surrogate_key([
+            'line_items.part_id',
+            'line_items.supplier_id'
+        ]) }} as part_supplier_sk,
+
         orders.order_date,
-        orders.status_code as order_status_code,
+        orders.status_code,
+        orders.priority_code,
+        orders.clerk_name,
+        orders.ship_priority,
+        line_items.order_item_sk,
+        line_items.part_id,
+        line_items.supplier_id,
         line_items.return_flag,
         line_items.line_number,
         line_items.status_code as order_item_status_code,
@@ -26,27 +35,18 @@ final as (
         line_items.ship_mode,
         line_items.extended_price,
         line_items.quantity,
-        
-        -- extended_price is actually the line item total,
-        -- so we back out the extended price per item
-        (line_items.extended_price/nullif(line_items.quantity, 0))::float as base_price,
+        line_items.base_price,
         line_items.discount_percentage, 
-        (base_price * (1 - line_items.discount_percentage))::float as discounted_price,
+        line_items.discounted_price,
         line_items.extended_price as gross_item_sales_amount,
-        (line_items.extended_price * (1 - line_items.discount_percentage))::float as discounted_item_sales_amount,
-
-        -- We model discounts as negative amounts
-        (-1 * line_items.extended_price * line_items.discount_percentage)::float as item_discount_amount,
+        line_items.discounted_item_sales_amount,
+        line_items.item_discount_amount,
         line_items.tax_rate,
-        ((gross_item_sales_amount + item_discount_amount) * line_items.tax_rate)::float as item_tax_amount,
-        (
-            gross_item_sales_amount + 
-            item_discount_amount + 
-            item_tax_amount
-        )::float as net_item_sales_amount
+        line_items.item_tax_amount,
+        line_items.net_item_sales_amount
     from orders
-    inner join line_items
-            on orders.order_key = line_items.order_key
+    left join line_items
+            on orders.order_id = line_items.order_id
 )
 
 select * from final

@@ -10,12 +10,12 @@ part_suppliers as (
 
 final as (
     select 
-        order_items.order_item_key,
-        order_items.order_key,
+        order_items.order_item_sk,
+        order_items.order_id,
         order_items.order_date,
-        order_items.customer_key,
-        order_items.part_key,
-        order_items.supplier_key,
+        order_items.customer_id,
+        order_items.part_id,
+        order_items.supplier_id,
         order_items.order_item_status_code,
         order_items.return_flag,
         order_items.line_number,
@@ -37,8 +37,7 @@ final as (
         order_items.net_item_sales_amount
     from order_items
     inner join part_suppliers
-        on order_items.part_key = part_suppliers.part_key
-        and order_items.supplier_key = part_suppliers.supplier_key
+        on order_items.part_supplier_sk = part_suppliers.part_supplier_sk
 )
 
 select * from final
