@@ -1,42 +1,54 @@
-Welcome to the dbt Labs Snowflake Demo Project! 
+# :star2: Welcome! :star2:
+You're viewing Christine's dbt Labs Snowflake Demo Project. This dbt project is 
+intended to showcase key Snowflake + dbt functionalities regarding workflow, 
+modeling, and operationalizing. 
 
-This dbt project is intended to showcase key Snowflake + dbt functionalities in terms of 
-workflow, modeling, and operationalizing. 
+Code for specific use cases can be found within the branches of this repository,
+and each scenario branch will contain more information about the use case in the 
+`About this Branch` section below.
 
-### Requirements
-In order to successfully run this project, you will need the following: 
+# :seedling: About this Branch
+This is the main branch and features the file structure and objects you'd 
+typically see in a beginner dbt project:
+- Models, organized within the `/models` folder into staging, intermediate, and marts models.
+- A packages.yml which contains some functionality used in the project.
+- A pull request template, which shows up in the repository hosting service's web
+  interface when opening a pull request.
 
-- A Snowflake account
-- dbt Cloud account
-- Snowflake Sample Data [The TPC-H dataset that is standard with every account](https://docs.snowflake.com/en/user-guide/sample-data-tpch.html)
-- Default Snowflake warehouse named compute_wh 
+# :video_game: Running this Project
+This section contains details on what's needed to actually run this demo
+project on your own:
 
-### Using the demo project
+### Data Platform
+This project uses Snowflake as it's underlying data platform. You are welcome to use
+[any data platform that is supported by dbt](https://docs.getdbt.com/docs/supported-data-platforms), 
+but be aware that there may be differences in implementation or more set up required
+to ensure you have everything you need.
 
-This project was built with the intent to be used with the dbt Cloud IDE and the UserFlow guided tour but 
-if you're unable to do this, here are the steps. 
+### Data Sets
+This project uses the Snowflake Sample [TPC-H dataset that is standard with every account](https://docs.snowflake.com/en/user-guide/sample-data-tpch.html),
+but there are articles online which tell you how to access this public data set
+for your own needs if you are not using Snowflake as your data platform.
 
-1. Read the entire README
-2. Check out the dbt_project.yml file. There you will find where we have defined our materializations, query tags, warehouse sizes, and hooks.
-3. Go to models/staging/tpch/stg_tpch_customers.sql. Read about how we write our models 
-4. Compile the code for stg_tpch_customers 
-5. Run `dbt deps` to install all the packages in the packages.yml 
-6. Run `dbt run` to run all of your dbt models.
-7. Look at the logs (under details) to see what SQL was ran.
-8. Run the show_incremental_model query in the analysis folder by clicking on `Preview Data`
-9. Run `dbt run -m incremental_dim_orders` to run the model incrementally 
-10. Run the show_incremental_model query in the analysis folder again with Preview Data. 
-11. Take a look at the incremental logic in incremental_dim_orders 
-12. Run `dbt test` to run the tests on your dbt models. Check out the models/staging/tcph/stg_tpch.yml file to see how tests are applied.
-13. Generate docs by running `dbt docs generate` and click on the `View Docs` on the left hand side. 
-14. Check out the docs site and click on the blue button on the botton to view the DAG. Right click on a node to refocus. Then right click again to view the docs.
-15. Create a production environment by clicking on the hamburger menu > environments. 
-16. Create a production job by clicking on the hamburger menu > jobs > create the job.
-17. Run the production job. 
+### Repository
+This project uses Github, but you can use any git provider as long as you ensure
+that you take the code from this repository and put it into your own. 
 
-If you have time, take a look at other aspects of the project. We have included other fun features for you to see, including:
-- How to change output based on environments 
-- How to dynamically pivot vs hardcoding your pivot
+If using Github, you can fork this repository for your own demo project.
+### dbt Core or dbt Cloud
+This project uses dbt to transform data in the warehouse. You must have [dbt core installed locally](https://docs.getdbt.com/docs/get-started/installation)
+or a [dbt Cloud account](https://docs.getdbt.com/docs/get-started/getting-started/set-up-dbt-cloud).
+
+These must be fully set up with the connections to the repository and warehouse 
+platforms you choose. Refer to dbt docs if you need help.
+
+### Ensuring setup
+To ensure that you've configured your project correctly, you'll want to try and
+run each of these commands:
+```bash
+$ dbt deps
+$ dbt build
+```
 
 ### Resources:
 - Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
@@ -44,6 +56,3 @@ If you have time, take a look at other aspects of the project. We have included 
 - Join the [chat](http://slack.getdbt.com/) on Slack for live discussions and support
 - Find [dbt events](https://events.getdbt.com) near you
 - Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
-
-## Help out:
-This is a open source project. If you want to contribute to this project/find any issues, [interact with us on the repository](https://github.com/dbt-labs/dbt-cloud-snowflake-demo-template)
