@@ -10,7 +10,7 @@ regions as (
 
 final as (
     select
-        {{ dbt_utils.surrogate_key([
+        {{ dbt_utils.generate_surrogate_key([
             'regions.region_id',            
             'nations.nation_id'
         ]) }} as location_sk,

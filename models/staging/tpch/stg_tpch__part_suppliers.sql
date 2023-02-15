@@ -7,7 +7,7 @@ source as (
 renamed as (
     select
         -- ids
-        {{ dbt_utils.surrogate_key(
+        {{ dbt_utils.generate_surrogate_key(
             ['ps_partkey', 
             'ps_suppkey']
         ) }} as part_supplier_sk,

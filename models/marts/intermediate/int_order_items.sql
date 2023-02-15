@@ -13,7 +13,7 @@ final as (
         orders.order_id,
         orders.customer_id,
 
-        {{ dbt_utils.surrogate_key([
+        {{ dbt_utils.generate_surrogate_key([
             'line_items.part_id',
             'line_items.supplier_id'
         ]) }} as part_supplier_sk,
