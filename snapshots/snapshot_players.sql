@@ -10,7 +10,8 @@
 
     source_data as (
         select 
-            id, 
+            id,
+            name,
             phone, 
             city, 
             item 
