@@ -16,6 +16,17 @@ target-path: "target"
 clean-targets:         
     - "dbt_modules"
 
+dispatch:
+  - macro_namespace: dbt
+    search_order:
+      - dbt_snowflake_demo
+      - dbt_snowflake_monitoring
+      - dbt
+
+query-comment:
+  comment: '{{ dbt_snowflake_monitoring.get_query_comment(node) }}'
+  append: true
+
 seeds:
   +quote_columns: false
 
@@ -24,3 +35,5 @@ models:
       marts:
         core:
           +materialized: table
+  dbt_snowflake_monitoring:
+    +schema: _package_dbt_snowflake_monitoring
