@@ -1,7 +1,7 @@
 {{ config(
     materialized='incremental',
     pre_hook=["{{ create_regexp_replace_udf(this) }}", "{{ create_merge_objects_udf(this) }}"],
-    enabled=var('tranfer_job_history_to_snowflake')
+    enabled=var('transfer_job_history_to_snowflake')
 ) }}
 
 with
