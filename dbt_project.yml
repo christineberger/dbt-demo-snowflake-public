@@ -20,7 +20,7 @@ vars:
   # This should be left as false and enabled at run time on a job, after the models complete
   # so that someone doesn't try to do this on a run with models. This helps avoid incomplete history.
   # Usage: `dbt run -s stg_snowflake__query_history+ --vars '{"tranfer_job_history_to_snowflake": true}'
-  tranfer_job_history_to_snowflake: false
+  transfer_job_history_to_snowflake: false
 
 dispatch:
   - macro_namespace: dbt

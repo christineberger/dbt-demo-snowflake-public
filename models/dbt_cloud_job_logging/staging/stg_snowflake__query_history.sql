@@ -9,12 +9,6 @@ with
 source as (
     select * from {{ source('snowflake_account_usage', 'query_history') }}
 
-    -- limiting the returned information to tagged queries
-    -- (which happens on model build with dbt-snowflake-query-tag package)
-    -- and only those made by the user.
-    -- We will filter this further later.
-    where query_tag != ''
-
     {%- if is_incremental() %}
     -- must use end time in case query hasn't completed
     and end_time > (select max(end_time) from {{ this }})
