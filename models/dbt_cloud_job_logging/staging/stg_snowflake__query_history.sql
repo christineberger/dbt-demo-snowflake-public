@@ -8,6 +8,7 @@ with
 source as (
     select * from {{ ref('base_snowflake__query_history') }}
     where dbt_metadata['app']::string = 'dbt'
+    and query_type not in ('ALTER SESSION', 'SHOW')
 
     {%- if is_incremental() %}
     -- must use end time in case query hasn't completed
