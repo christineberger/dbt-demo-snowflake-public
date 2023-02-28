@@ -14,7 +14,6 @@ source as (
     -- and only those made by the user.
     -- We will filter this further later.
     where query_tag != ''
-    and lower(user_name) = '{{ target.user | lower }}'
 
     {%- if is_incremental() %}
     -- must use end time in case query hasn't completed
