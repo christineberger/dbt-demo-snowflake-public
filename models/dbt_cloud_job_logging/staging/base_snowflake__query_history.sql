@@ -1,5 +1,5 @@
 {{ config(
-    materialized='incremental',
+    materialized='view',
     pre_hook=["{{ create_regexp_replace_udf(this) }}", "{{ create_merge_objects_udf(this) }}"],
     enabled=var('transfer_job_history_to_snowflake')
 ) }}
@@ -8,11 +8,6 @@ with
 
 source as (
     select * from {{ source('snowflake_account_usage', 'query_history') }}
-
-    {%- if is_incremental() %}
-    -- must use end time in case query hasn't completed
-    and end_time > (select max(end_time) from {{ this }})
-    {%- endif %}
 ),
 
 transformed as (

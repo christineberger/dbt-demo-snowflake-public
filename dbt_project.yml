@@ -38,3 +38,5 @@ models:
       marts:
         core:
           +materialized: table
+      dbt_cloud_job_logging:
+        +schema: _query_logs
