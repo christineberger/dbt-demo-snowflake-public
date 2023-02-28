@@ -16,6 +16,12 @@ target-path: "target"
 clean-targets:         
     - "dbt_modules"
 
+vars:
+  # This should be left as false and enabled at run time on a job, after the models complete
+  # so that someone doesn't try to do this on a run with models. This helps avoid incomplete history.
+  # Usage: `dbt run -s stg_snowflake__query_history+ --vars '{"tranfer_job_history_to_snowflake": true}'
+  tranfer_job_history_to_snowflake: false
+
 dispatch:
   - macro_namespace: dbt
     search_order:
@@ -24,7 +30,7 @@ dispatch:
       - dbt
 
 query-comment:
-  comment: '{{ dbt_snowflake_monitoring.get_query_comment(node) }}'
+  comment: '{{ dbt_snowflake_query_tags.get_query_comment(node) }}'
   append: true
 
 seeds:
@@ -35,5 +41,3 @@ models:
       marts:
         core:
           +materialized: table
-  dbt_snowflake_monitoring:
-    +schema: _package_dbt_snowflake_monitoring
