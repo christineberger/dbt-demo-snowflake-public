@@ -1,16 +1,29 @@
 {{ config(
-    materialized='view',
-    pre_hook=["{{ create_regexp_replace_udf(this) }}", "{{ create_merge_objects_udf(this) }}"],
-    enabled=var('transfer_job_history_to_snowflake')
+    materialized='incremental',
+    unique_id='query_id',
+    pre_hook=[
+        {"sql": "{{ ensure_models_are_selected() }}", "transaction": false},
+        "{{ create_regexp_replace_udf(this) }}",
+        "{{ create_merge_objects_udf(this) }}"
+    ],
+    enabled=var('transfer_job_history_to_snowflake') 
 ) }}
 
 with
 
 source as (
     select * from {{ source('snowflake_account_usage', 'query_history') }}
+    
+    -- Using end_time ensures it captures items which haven't been completed
+    -- Filtering to the current user ensures that we're only adding history items
+    -- that are newly added from the user that was running the models
+    where lower(user_name) = '{{ target.user | lower }}'
+    {%- if is_incremental() %}
+        and end_time > (select max(end_time) from {{ this }} where lower(user_name) = '{{ target.user | lower }}')
+    {%- endif %}
 ),
 
-transformed as (
+cleanup as (
     select
         query_id,
         query_text,
@@ -37,7 +50,7 @@ transformed as (
         compilation_time,
         execution_time,
         queued_provisioning_time,
-        
+
         -- this removes comments enclosed by /* <comment text> */ and 
         -- single line comments starting with -- and either ending with 
         -- a new line or end of string
@@ -63,7 +76,26 @@ transformed as (
             )
         end as dbt_metadata
     from source
+),
+
+filter_and_extract_jobs as (
+    select
+        -- Note: This needs to be set up within your environment variables
+        -- from Deploy > Environments > Environment Variables. You only need
+        -- to set the default here as every environment will have the same
+        -- value.
+        '{{ env_var("DBT_CLOUD_ACCOUNT_ID") }}' as dbt_cloud_account_id,
+        dbt_metadata['dbt_cloud_job_id']::string as dbt_cloud_job_id,
+        dbt_metadata['dbt_cloud_project_id']::string as dbt_cloud_project_id,
+        dbt_metadata['dbt_cloud_run_id']::string as dbt_cloud_run_id,
+        dbt_metadata['dbt_cloud_run_reason']::string as dbt_cloud_run_reason,
+        dbt_metadata['node_name']::string as dbt_job_node_name,
+        dbt_metadata['node_resource_type']::string as dbt_job_node_resource_type,
+        *    
+    from cleanup
+    -- Only things sent from a dbt cloud job run
+    where dbt_metadata['dbt_cloud_run_id'] is not null
 )
 
-select * from transformed        
+select * from filter_and_extract_jobs
 order by start_time
