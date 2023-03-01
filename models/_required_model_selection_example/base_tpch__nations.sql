@@ -1,5 +1,7 @@
 {{ config(
-    pre_hook={"sql": "{{ ensure_models_are_selected(['stg_tpch__locations']) }}", "transaction": false}
+    pre_hook=[
+        "{{ required_builds(['stg_tpch__locations']) }}"
+    ]
 ) }}
 
 with 
