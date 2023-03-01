@@ -16,27 +16,8 @@ target-path: "target"
 clean-targets:         
     - "dbt_modules"
 
-vars:
-  # This should be left as false and enabled at run time on a job, after the models complete
-  # so that someone doesn't try to do this on a run with models. This helps avoid incomplete history.
-  # Usage: `dbt run -s stg_snowflake__query_history+ --vars '{"transfer_job_history_to_snowflake": true}'
-  transfer_job_history_to_snowflake: false
-
-dispatch:
-  - macro_namespace: dbt
-    search_order:
-      - dbt_snowflake_demo
-      - dbt_snowflake_monitoring
-      - dbt
-
-query-comment:
-  comment: '{{ dbt_snowflake_query_tags.get_query_comment(node) }}'
-  append: true
-
 models:
   dbt_snowflake_demo:
       marts:
         core:
           +materialized: table
-      dbt_cloud_job_logging:
-        +schema: _query_logs

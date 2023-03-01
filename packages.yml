@@ -1,7 +1,3 @@
 packages:
   - package: dbt-labs/dbt_utils
     version: 1.0.0
-  - package: dbt-labs/audit_helper
-    version: 0.7.0
-  - package: get-select/dbt_snowflake_query_tags
-    version: 2.0.1
