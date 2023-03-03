@@ -10,7 +10,7 @@ so that certain column values within the snapshot can be updated.
 - The updates from the macro are only done on `dbt_valid_to is null` (the valid records)
 
 ### Setup
-1. Grab the macro code for [update_valud_snapshot_records()](https://github.com/christineberger/dbt-demo-snowflake-public/blob/example__snapshot_scenarios/macros/update_valid_snapshot_rows/update_valid_snapshot_records.sql)
+1. Grab the macro code for [update_valid_snapshot_records()](https://github.com/christineberger/dbt-demo-snowflake-public/blob/example__snapshot_scenarios/macros/update_valid_snapshot_rows/update_valid_snapshot_records.sql)
    and add it to your `/macros` folder.
 2. Create and configure your snapshot. The required configurations for this to work properly
    is outlined below:
