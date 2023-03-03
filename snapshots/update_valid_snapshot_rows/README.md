@@ -35,25 +35,25 @@ so that certain column values within the snapshot can be updated.
 1. This is our hypothetical source table (this is likely a table that's already 
    loaded into your warehouse, but for the purposes of this demo we create some 
    data as a model so we can change the "source" easily.)  
-   [](_images/hypothetical_source.png)  
+   ![](images/hypothetical_source.png)  
    Here's what our snapshot looks like when we initially run `dbt snapshot`:    
-   [](_images/initial_snapshot.png)
+   ![](images/initial_snapshot.png)
 2. Our source data changes. `Thomas Shelby` now goes by `Thomas Bergman`. We 
    should see an update to our valid row for `id=2`.    
-   [](_images/source_change_1.png)  
+   ![](images/source_change_1.png)  
    After running `dbt snapshot`, the snapshot reflects what we expected - an
    update to `id=2`'s valid record:  
-   [](_images/snapshot_change_1.png)
+   ![](images/snapshot_change_1.png)
 3. On our next snapshot, Thomas has moved to `chicago`. We expect to see a new
    record for `id=2` and an update to invalidate the old valid record:  
-   [](_images/source_change_2.png)  
+   ![](images/source_change_2.png)  
    When we snapshot again, we see that `id=2` has a new valid row and that the 
    old record now has a `dbt_valid_to` date populated:  
-   [](_images/snapshot_change_2.png)
+   ![](images/snapshot_change_2.png)
 4. Thomas now goes by "Tom" and has updated this. Our source data changes, and
    we expect that the most recent valid record for `id=2` will update instead
    of appending a new row with the change:  
-   [](_images/source_change_3.png)  
+   ![](images/source_change_3.png)  
    When we snapshot again, we see that `id=2`'s `dbt_valid_to=null` record
    updated successfully:  
-   [](_images/snapshot_change_3.png)  
+   ![](images/snapshot_change_3.png)  
