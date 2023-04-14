@@ -1,3 +1,9 @@
+{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    post_hook="{{ delete_from_table(model, 'o_orderkey') }}"
+) }}
+
 with 
 
 source as (
